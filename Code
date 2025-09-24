@@ -1,0 +1,36 @@
+#include <Servo.h>
+
+const int buttonPins[5] = {7, 6, 5, 4, 3};
+const int servoPins[5]  = {12, 11, 10, 9, 8};
+
+Servo servos[5];
+bool isPressed[5] = {false, false, false, false, false};
+
+void setup() {
+  Serial.begin(9600);
+
+  for (int i = 0; i < 5; i++) {
+    pinMode(buttonPins[i], INPUT);
+    servos[i].attach(servoPins[i]);
+    servos[i].write(0);  // start at neutral position
+  }
+}
+
+void loop() {
+  for (int i = 0; i < 5; i++) {
+    int buttonState = digitalRead(buttonPins[i]);
+    Serial.print("Button "); Serial.print(i); Serial.print(": "); Serial.println(buttonState);
+
+    if (buttonState == HIGH && !isPressed[i]) {
+      servos[i].write(180);  // bend finger fully
+      isPressed[i] = true;
+    }
+
+    if (buttonState == LOW && isPressed[i]) {
+      servos[i].write(0);    // return finger to start
+      isPressed[i] = false;
+    }
+  }
+
+  delay(100);
+}
